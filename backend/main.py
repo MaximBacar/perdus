@@ -17,7 +17,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173", "https://app.perdus.tech", "https://perdus.tech"],
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173", "https://app.perdus.tech", "https://perdus.tech", "https://www.perdus.tech"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
