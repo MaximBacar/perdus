@@ -4,7 +4,6 @@ import firebase_admin
 from google import genai
 from firebase_admin import credentials, firestore, storage
 from google.cloud.firestore import Client as FirestoreClient
-from sentence_transformers import SentenceTransformer
 
 from src.core.config import get_settings
 
@@ -15,7 +14,6 @@ class Services:
     db: FirestoreClient
     bucket: storage.bucket
     gemini: genai.Client
-    embedder: SentenceTransformer
 
 
 _services: Services | None = None
@@ -39,18 +37,17 @@ def init_services() -> Services:
     bucket = storage.bucket()
 
     # Gemini
-
     gemini = genai.Client(api_key=settings.gemini_api_key)
 
-    # vector Embedding
-    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    # vector Embedding (commented out - using Gemini embeddings instead)
+    # embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
     _services = Services(
         firebase_app=firebase_app,
         db=db,
         bucket=bucket,
         gemini=gemini,
-        embedder=embedder,
+        # embedder=embedder,
     )
 
     return _services
@@ -69,10 +66,16 @@ def get_db() -> FirestoreClient:
 def get_gemini() -> genai.Client:
     return get_services().gemini
 
-
-def get_embedder() -> SentenceTransformer:
-    return get_services().embedder
-
-
 def get_bucket():
     return get_services().bucket
+
+
+def embed(text: str) -> list[float]:
+    """Generate embedding vector for the given text using Gemini."""
+    gemini = get_gemini()
+    response = gemini.models.embed_content(
+        model="gemini-embedding-exp-03-07",
+        contents=text,
+    )
+    return response.embeddings[0].values
+

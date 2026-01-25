@@ -12,7 +12,5 @@ dependencies = [
     "pillow>=12.1.0",
     "pydantic-settings>=2.0.0",
     "python-multipart>=0.0.21",
-    "sentence-transformers>=5.1.2",
-    "torch==2.2.0",
     "uvicorn>=0.40.0",
 ]

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Link } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,7 @@ import { PageTransition } from "@/components/PageTransition";
 
 export const ObjectsPage = () => {
   const [items, setItems] = useState([]);
+  const [pendingItems, setPendingItems] = useState([]);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("lost");
 
@@ -24,14 +25,26 @@ export const ObjectsPage = () => {
         ...doc.data(),
       }));
       setItems(itemsData);
+
+      // Remove pending items that now exist in Firestore
+      setPendingItems((prev) =>
+        prev.filter((pending) => !itemsData.some((item) => item.id === pending.id))
+      );
     });
 
     return () => unsubscribe();
   }, []);
 
+  const handlePendingItem = (item) => {
+    setPendingItems((prev) => [item, ...prev]);
+  };
+
+  const getItemStatus = (item) => item.inquiry_id ? "matched" : "lost";
+
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
-      const matchesStatus = item.status === activeTab;
+      const status = getItemStatus(item);
+      const matchesStatus = status === activeTab;
       const matchesSearch = search.trim() === "" ||
         item.title?.toLowerCase().includes(search.toLowerCase()) ||
         item.description?.toLowerCase().includes(search.toLowerCase());
@@ -39,17 +52,25 @@ export const ObjectsPage = () => {
     });
   }, [items, activeTab, search]);
 
+  // Only show pending items in "lost" tab
+  const filteredPendingItems = useMemo(() => {
+    if (activeTab !== "lost") return [];
+    return pendingItems;
+  }, [pendingItems, activeTab]);
+
   const formatDate = (timestamp) => {
     if (!timestamp) return "-";
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleDateString();
   };
 
-  const ItemsTable = ({ items }) => (
+  const ItemsTable = ({ items, pendingItems = [] }) => (
     <ScrollArea className="h-[calc(100vh-280px)] border-b">
       <Table>
         <TableCaption>
-          {items.length === 0 ? "No items found." : `${items.length} item${items.length !== 1 ? "s" : ""} found.`}
+          {items.length === 0 && pendingItems.length === 0
+            ? "No items found."
+            : `${items.length + pendingItems.length} item${items.length + pendingItems.length !== 1 ? "s" : ""} found.`}
         </TableCaption>
         <TableHeader>
           <TableRow>
@@ -60,6 +81,33 @@ export const ObjectsPage = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
+          {pendingItems.map((item) => (
+            <TableRow key={item.id} className="opacity-50 pointer-events-none">
+              <TableCell>
+                {item.previewUrl ? (
+                  <div className="relative">
+                    <img
+                      src={item.previewUrl}
+                      alt="Item"
+                      className="w-16 h-16 object-cover rounded grayscale"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    </div>
+                  </div>
+                ) : (
+                  "-"
+                )}
+              </TableCell>
+              <TableCell className="max-w-xs">
+                <span className="text-muted-foreground">Processing...</span>
+              </TableCell>
+              <TableCell>
+                <ItemStatus status="lost"/>
+              </TableCell>
+              <TableCell>{new Date().toLocaleDateString()}</TableCell>
+            </TableRow>
+          ))}
           {items.map((item) => (
             <TableRow key={item.id}>
               <TableCell>
@@ -82,7 +130,7 @@ export const ObjectsPage = () => {
                 </Link>
               </TableCell>
               <TableCell>
-                <ItemStatus status={item?.status}/>
+                <ItemStatus status={getItemStatus(item)}/>
               </TableCell>
               <TableCell>{formatDate(item.date_added)}</TableCell>
             </TableRow>
@@ -104,7 +152,7 @@ export const ObjectsPage = () => {
             className="pl-9"
           />
         </div>
-        <NewObject/>
+        <NewObject onPendingItem={handlePendingItem} />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -113,7 +161,7 @@ export const ObjectsPage = () => {
           <TabsTrigger value="matched">Matched</TabsTrigger>
         </TabsList>
         <TabsContent value="lost">
-          <ItemsTable items={filteredItems} />
+          <ItemsTable items={filteredItems} pendingItems={filteredPendingItems} />
         </TabsContent>
         <TabsContent value="matched">
           <ItemsTable items={filteredItems} />

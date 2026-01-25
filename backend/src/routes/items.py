@@ -21,11 +21,13 @@ async def list_items(limit: int = Query(default=5, le=50)):
     items = []
     for doc in docs:
         data = doc.to_dict()
+        inquiry_id = data.get("inquiry_id")
         items.append({
             "id": doc.id,
             "title": data.get("title"),
             "description": data.get("description"),
-            "status": data.get("status"),
+            "status": "matched" if inquiry_id else "lost",
+            "inquiry_id": inquiry_id,
             "image_url": data.get("image_url"),
             "date_added": data.get("date_added").isoformat() if data.get("date_added") else None,
         })

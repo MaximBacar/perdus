@@ -1,4 +1,5 @@
 import { useState, useRef } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,7 +15,7 @@ import { addObject } from "@/requests/objects"
 import { Plus } from "lucide-react"
 
 
-export const NewObject = () => {
+export const NewObject = ({ onPendingItem }) => {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -31,14 +32,32 @@ export const NewObject = () => {
   const handleAdd = async () => {
     if (!file) return;
     setIsUploading(true);
-    try {
-      await addObject(file);
-      setOpen(false);
-    } catch (error) {
-      console.error("Upload failed:", error);
-    } finally {
-      setIsUploading(false);
-    }
+    setOpen(false);
+
+    const previewUrl = preview;
+
+    toast.promise(
+      addObject(file).then((response) => {
+        // Add pending item to the table
+        if (onPendingItem && response.item_id) {
+          onPendingItem({
+            id: response.item_id,
+            previewUrl,
+          });
+        }
+        return response;
+      }),
+      {
+        loading: "Uploading image...",
+        success: "Object is being processed",
+        error: "Failed to add object",
+        finally: () => {
+          setIsUploading(false);
+          setFile(null);
+          setPreview(null);
+        },
+      }
+    );
   };
 
   const handleClose = () => {

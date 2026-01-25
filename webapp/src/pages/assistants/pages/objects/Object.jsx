@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-import { Badge } from "@/components/ui/badge";
 import { ItemStatus } from "@/components/statuses/ItemStatus";
 import { PageTransition } from "@/components/PageTransition";
 
@@ -37,7 +36,7 @@ export const ObjectPage = () => {
     <PageTransition className="flex flex-col w-full h-full p-6 gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold">{item.title || "Object"}</h1>
-        <ItemStatus status={item.status}/>
+        <ItemStatus status={item.inquiry_id ? "matched" : "lost"}/>
        
       </div>
 

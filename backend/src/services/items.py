@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from pydantic import BaseModel, Field
 
-from src.core.services import get_db, get_gemini, get_embedder, get_bucket
+from src.core.services import get_db, get_gemini, get_bucket, embed
 
 
 class ItemDescription(BaseModel):
@@ -16,7 +16,6 @@ async def add_item(image_bytes: bytes, item_id: str):
     bucket = get_bucket()
     db = get_db()
     gemini = get_gemini()
-    embedder = get_embedder()
 
     blob = bucket.blob(f"items/{item_id}.jpg")
     blob.upload_from_string(image_bytes, content_type="image/jpeg")
@@ -42,7 +41,7 @@ async def add_item(image_bytes: bytes, item_id: str):
     description = result.description
 
     # Generate embedding
-    embedding = embedder.encode(description).tolist()
+    embedding = embed(description)
 
     # Store in Firestore
     db.collection("items").document(item_id).set({
@@ -50,6 +49,5 @@ async def add_item(image_bytes: bytes, item_id: str):
         "title": title,
         "description": description,
         "date_added": datetime.now(timezone.utc),
-        "status": "lost",
         "image_url": image_url
     })

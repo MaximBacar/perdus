@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 
-from src.core.services import get_db, get_gemini, get_embedder
+from src.core.services import get_db, get_gemini, embed
 
 
 def create_inquiry(uid: str) -> str:
@@ -116,8 +116,6 @@ async def match_inquiry(
     image_bytes: Optional[bytes] = None
 ):
     db = get_db()
-    
-    embedder = get_embedder()
 
     combined_description = description
 
@@ -126,7 +124,7 @@ async def match_inquiry(
         combined_description = f"{description} {image_description}"
 
     # Vectorize the combined description
-    inquiry_embedding = embedder.encode(combined_description).tolist()
+    inquiry_embedding = embed(combined_description)
 
     # Get all items from Firestore
     items_ref = db.collection("items").stream()
