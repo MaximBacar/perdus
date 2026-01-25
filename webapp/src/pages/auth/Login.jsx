@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PageTransition } from '@/components/PageTransition'
 
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
@@ -15,7 +16,7 @@ export const Login = () => {
         }
     };
     return (
-        <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
+        <PageTransition className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
             <form
                 action=""
                 className="max-w-92 m-auto h-fit w-full">
@@ -93,7 +94,7 @@ export const Login = () => {
                     </Button>
                 </p>
             </form>
-        </section>
+        </PageTransition>
     )
 }
 
