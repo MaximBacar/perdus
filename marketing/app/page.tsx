@@ -99,7 +99,8 @@ export default function Home() {
               View Demo
             </a>
             <a
-              href="#get-started"
+              href="https://app.perdus.tech/login"
+              target="_blank"
               className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Get Started
@@ -164,10 +165,11 @@ export default function Home() {
               className="flex flex-col items-center justify-center gap-4 sm:flex-row"
             >
               <a
-                href="#get-started"
+                href="https://devpost.com/software/perdus?ref_content=user-portfolio&ref_feature=in_progress"
+                target="_blank"
                 className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 text-base font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:gap-3 sm:w-auto"
               >
-                Get Started
+                Devpost
                 <ArrowRight className="h-4 w-4" />
               </a>
               <a
@@ -957,11 +959,12 @@ export default function Home() {
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
-                  href="#"
+                  href="https://youtu.be/wuHm1-r1MEo"
+                  target="_blank"
                   id="demo"
                   className="flex w-full items-center justify-center rounded-full border border-white/30 px-8 py-3 text-base font-medium transition-colors hover:bg-white/10 sm:w-auto"
                 >
-                  Request Demo
+                  View Demo
                 </a>
               </motion.div>
             </div>
