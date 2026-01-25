@@ -59,7 +59,7 @@ export const Login = () => {
                         </Button>
                     </div>
 
-                    <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                    {/* <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
                         <hr className="border-dashed" />
                         <span className="text-muted-foreground text-xs">Or continue With</span>
                         <hr className="border-dashed" />
@@ -81,18 +81,10 @@ export const Login = () => {
                         </div>
 
                         <Button className="w-full">Continue</Button>
-                    </div>
+                    </div> */}
                 </div>
 
-                <p className="text-accent-foreground text-center text-sm">
-                    Don't have an account ?
-                    <Button
-                        asChild
-                        variant="link"
-                        className="px-2">
-                        <a href="#">Create account</a>
-                    </Button>
-                </p>
+                
             </form>
         </PageTransition>
     )
