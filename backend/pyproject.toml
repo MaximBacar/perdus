@@ -10,6 +10,7 @@ dependencies = [
     "google-genai>=1.60.0",
     "numpy==1.26.4",
     "pillow>=12.1.0",
+    "pydantic>=2.12.5",
     "pydantic-settings>=2.0.0",
     "python-multipart>=0.0.21",
     "uvicorn>=0.40.0",

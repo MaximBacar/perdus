@@ -71,7 +71,6 @@ def get_bucket():
 
 
 def embed(text: str) -> list[float]:
-    """Generate embedding vector for the given text using Gemini."""
     gemini = get_gemini()
     response = gemini.models.embed_content(
         model="gemini-embedding-exp-03-07",
